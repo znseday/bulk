@@ -22,7 +22,7 @@ int main(int argc, const char **argv)
             exit(0);
         }
     #else
-        i_stream = cin;
+        istream &i_stream = cin;
     #endif
 
     MY_DEBUG_ONLY(cout << "Homework bulk (DEBUG detected)" << endl);
