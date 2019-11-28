@@ -43,60 +43,13 @@ void TestFile(const char *file_name);
 class Observer
 {
 private:
-//    size_t N = 3;
-//    bool BracketOpen = false;
-//    std::vector<std::string> cmds;
+
 public:
 
     virtual void Do(/*OutputType out_, */const std::vector<std::string> &cmds, /*std::chrono::time_point<std::chrono::high_resolution_clock>*/ time_t t) = 0;
     virtual ~Observer() = default;
 
     //void (Observer::*ActiveHandler)(std::string &&) = &Observer::StateCommand;
-
-//    void StateLine(std::string &&str)
-//    {
-//        if (str == "{")
-//        {
-//            ActiveHandler = &Observer::StateOpenBlock;
-//            (this->*ActiveHandler)(std::move(str));
-//        }
-//    }
-//    void StateOpenBlock( [[maybe_unused]] std::string &&str )
-//    {
-//        cmds.clear();
-//        ActiveHandler = &Observer::StateCommand;
-//    }
-//    void StateCommand(std::string &&str)
-//    {
-//        if (cmds.empty() && str != "{")
-//        {
-//            cmds.push_back(str); // emplace_back
-//        }
-//        if (cmds.size() == N && !BracketOpen)
-//        {
-//            Do()
-//        }
-//        if (str == "{")
-//        {
-//            ActiveHandler = &Observer::StateOpenBlock;
-//            (this->*ActiveHandler)(std::move(str));
-//        }
-//        else if (str == "}")
-//            ActiveHandler = &Observer::StateExec;
-//        else
-//        {
-//            cmds.push_back(str); // emplace_back
-//            if(cmds.size()==N)
-//            {
-//                ActiveHandler = &Observer::StateExec;
-//            }
-//        }
-//    }
-//    void StateExec(std::string &&str)
-//    {
-//        ActiveHandler = &Observer::StateCommand;
-//        (this->*ActiveHandler)(std::move(str));
-//    }
 
 };
 //-----------------------------------------------
