@@ -1,11 +1,43 @@
 #include <iostream>
 #include <cassert>
+#include <fstream>
+#include <chrono>
+#include <thread>
 
 #include "bulk.h"
 
 using namespace std;
 
-void TestBasic()
+
+
+void TestFile(const char *file_name)
 {
-    cout << "TestBasic" << endl;
+    cout << "File: " << file_name << endl;
+
+    ifstream i_stream = ifstream(file_name);
+    if (!i_stream)
+    {
+        cout << "My error: the input file not found" << endl;
+        exit(0);
+    }
+
+    Commands cmds(3);
+
+    LocalFileObserver LocalFileObs(&cmds);
+    ConsoleObserver   ConsoleObs(&cmds);
+
+    string line;
+    while (getline(i_stream, line))
+    {
+        std::this_thread::sleep_for(0.6s);
+        cout << line << endl; // just echo
+
+        cmds.AnalyzeCommand(line);
+    }    
+    cmds.ExecForAllSubs();
+
+    i_stream.close();
+    cout << endl << endl;
 }
+
+
