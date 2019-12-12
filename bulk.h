@@ -51,6 +51,7 @@ public:
 
     //void (Observer::*ActiveHandler)(std::string &&) = &Observer::StateCommand;
 
+
 };
 //-----------------------------------------------
 
@@ -60,8 +61,10 @@ public:
 class Commands
 {
 private:
-    //OutputType output;
-    std::vector<Observer *> subs;
+
+    //std::vector<Observer *> subs;
+    //std::vector<unique_ptr<Observer>> subs;
+    std::vector<shared_ptr<Observer>> subs;
 
     size_t N = 3;
     size_t BracketOpenLevel = 0;
@@ -74,8 +77,11 @@ public:
 
     Commands(size_t _N) : N(_N) {}
 
-    void subscribe(Observer *obs)
+    //void subscribe(Observer *obs)
+    //void subscribe(shared_ptr<Observer> &&obs)
+    void subscribe(const shared_ptr<Observer> &obs)
     {
+        //subs.push_back(std::move(obs));
         subs.push_back(obs);
     }
 
@@ -91,7 +97,7 @@ public:
         }
         if (cmds.size() == N && !BracketOpenLevel)
         {
-            ExecForAllSubs();
+            ExecForAllSubs(false);
             //cmds.clear();
         }
         if (str == "{")
@@ -99,7 +105,7 @@ public:
             BracketOpenLevel++;
 
             if (BracketOpenLevel == 1 && !cmds.empty())
-                ExecForAllSubs();
+                ExecForAllSubs(false);
 
         }
         if (str == "}")
@@ -107,7 +113,7 @@ public:
             BracketOpenLevel--;
             if (BracketOpenLevel == 0 && !cmds.empty())
             {
-                ExecForAllSubs();
+                ExecForAllSubs(false);
                 //cmds.clear();
 
             }
@@ -115,26 +121,52 @@ public:
 
     }
 
-    void ExecForAllSubs(/*const std::vector<std::string> &_cmds*/)
+    void ExecForAllSubs(bool isFinished  /*const std::vector<std::string> &_cmds*/)
     {
-        if (!cmds.empty() && BracketOpenLevel == 0)
+        if ( !cmds.empty() &&  ( BracketOpenLevel == 0 || (BracketOpenLevel == 1 && !isFinished) ) )
         {
-            for (auto s : subs)
+            for (auto &s : subs)
+            {
                 s->Do(cmds, timeFirst);
+                //s.get()->Do(cmds, timeFirst);
+            }
 
             cmds.clear();
         }
     }
+
 };
 //-----------------------------------------------
 
-class ConsoleObserver : public Observer
+class ConsoleObserver : std::enable_shared_from_this<ConsoleObserver>, public Observer
 {
 public:
 
-    ConsoleObserver(Commands *_cmds)
+//    ConsoleObserver(Commands *_cmds)
+//    {
+//        //unique_ptr<Observer> t = dynamic_cast<Observer*>(this);
+//        //auto t = make_unique<Observer>(static_cast<Observer*>(this));
+//        //_cmds->subscribe(std::move(t));
+
+//        //auto t = shared_from_this();
+
+//        //_cmds->subscribe(shared_from_this()); // terminate called after throwing an instance of 'std::bad_weak_ptr'
+
+//        // cppreference:
+//        // It is permitted to call shared_from_this only on a previously shared object,
+//        // i.e. on an object managed by std::shared_ptr (in particular, shared_from_this cannot be called during construction of *this).
+//        // Otherwise the behavior is undefined (until C++17)std::bad_weak_ptr is thrown
+//        // (by the shared_ptr constructor from a default-constructed weak_this) (since C++17).
+
+//        //->subscribe(t);
+
+//        JustNotConstructor(_cmds);
+//    }
+
+    void JustNotConstructor(Commands *_cmds)
     {
-        _cmds->subscribe(this);
+        auto t = shared_from_this(); // terminate called after throwing an instance of 'std::bad_weak_ptr'. Why ????????
+        _cmds->subscribe(t);
     }
 
     void Do(const std::vector<std::string> &cmds, [[maybe_unused]]/* std::chrono::time_point<std::chrono::high_resolution_clock>*/ time_t t) override
@@ -148,12 +180,20 @@ public:
 };
 //-----------------------------------------------
 
-class LocalFileObserver : public Observer
+class LocalFileObserver : public Observer, std::enable_shared_from_this<ConsoleObserver>
 {
 public:
-    LocalFileObserver(Commands *_cmds)
+//    LocalFileObserver(Commands *_cmds)
+//    {
+//        //make_unique
+//        //auto t = make_unique<Observer>(static_cast<Observer*>(this));
+//        //_cmds->subscribe(std::move(t));
+//        _cmds->subscribe(shared_from_this());
+//    }
+
+    void JustNotConstructor(Commands *_cmds)
     {
-        _cmds->subscribe(this);
+        _cmds->subscribe(shared_from_this());
     }
 
     void Do(const std::vector<std::string> &cmds, /*std::chrono::time_point<std::chrono::high_resolution_clock>*/ time_t t) override

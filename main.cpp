@@ -39,22 +39,24 @@ int main(int argc, const char **argv)
 
     Commands cmds( (argc<2) ? 3 : static_cast<size_t>(atoi(argv[1])) );
 
-    LocalFileObserver LocalFileObs(&cmds);
-    ConsoleObserver   ConsoleObs(&cmds);
+//    LocalFileObserver LocalFileObs(&cmds);
+//    ConsoleObserver   ConsoleObs(&cmds);
 
-    string line;
-    while (getline(i_stream, line))
-    {
-        #if (defined WIN32) || (defined WIN64)
-            std::this_thread::sleep_for(1.0s);
-            cout << line << endl; // just echo
-        #else
-            // nothing
-        #endif
+//    ConsoleObserver ConsoleObs; ConsoleObs.JustNotConstructor(&cmds);
 
-        cmds.AnalyzeCommand(line);
-    }
-    cmds.ExecForAllSubs();
+//    string line;
+//    while (getline(i_stream, line))
+//    {
+//        #if (defined WIN32) || (defined WIN64)
+//            std::this_thread::sleep_for(1.0s);
+//            cout << line << endl; // just echo
+//        #else
+//            // nothing
+//        #endif
+
+//        cmds.AnalyzeCommand(line);
+//    }
+//    cmds.ExecForAllSubs(true);
 
     return 0;
 }

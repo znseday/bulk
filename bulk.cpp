@@ -23,18 +23,23 @@ void TestFile(const char *file_name)
 
     Commands cmds(3);
 
-    LocalFileObserver LocalFileObs(&cmds);
-    ConsoleObserver   ConsoleObs(&cmds);
+    //LocalFileObserver LocalFileObs(&cmds);
+    //ConsoleObserver   ConsoleObs(&cmds);
+
+    //ConsoleObserver ConsoleObs; ConsoleObs.JustNotConstructor(&cmds);
+
+    auto ConsoleObs = make_shared<ConsoleObserver>();
+    ConsoleObs->JustNotConstructor(&cmds);
 
     string line;
     while (getline(i_stream, line))
     {
-        std::this_thread::sleep_for(0.6s);
+        std::this_thread::sleep_for(0.1s);
         cout << line << endl; // just echo
 
         cmds.AnalyzeCommand(line);
     }    
-    cmds.ExecForAllSubs();
+    cmds.ExecForAllSubs(true);
 
     i_stream.close();
     cout << endl << endl;
