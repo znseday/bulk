@@ -37,26 +37,30 @@ int main(int argc, const char **argv)
         // some
     #endif
 
-    Commands cmds( (argc<2) ? 3 : static_cast<size_t>(atoi(argv[1])) );
+    auto  cmds = make_unique<Commands>( (argc<2) ? 3 : static_cast<size_t>(atoi(argv[1])) );
 
 //    LocalFileObserver LocalFileObs(&cmds);
 //    ConsoleObserver   ConsoleObs(&cmds);
 
-//    ConsoleObserver ConsoleObs; ConsoleObs.JustNotConstructor(&cmds);
+    auto ConsoleObs = make_shared<ConsoleObserver>();
+    ConsoleObs->JustNotConstructor(cmds);
 
-//    string line;
-//    while (getline(i_stream, line))
-//    {
-//        #if (defined WIN32) || (defined WIN64)
-//            std::this_thread::sleep_for(1.0s);
-//            cout << line << endl; // just echo
-//        #else
-//            // nothing
-//        #endif
+    auto LocalFileObs = std::make_shared<LocalFileObserver>();
+    LocalFileObs->JustNotConstructor(cmds);
 
-//        cmds.AnalyzeCommand(line);
-//    }
-//    cmds.ExecForAllSubs(true);
+    string line;
+    while (getline(i_stream, line))
+    {
+        #if (defined WIN32) || (defined WIN64)
+            std::this_thread::sleep_for(1.0s);
+            cout << line << endl; // just echo
+        #else
+            // nothing
+        #endif
+
+        cmds->AnalyzeCommand(line);
+    }
+    cmds->ExecForAllSubs(true);
 
     return 0;
 }

@@ -21,25 +21,26 @@ void TestFile(const char *file_name)
         exit(0);
     }
 
-    Commands cmds(3);
+    auto cmds = make_unique<Commands>(3);
 
     //LocalFileObserver LocalFileObs(&cmds);
     //ConsoleObserver   ConsoleObs(&cmds);
 
-    //ConsoleObserver ConsoleObs; ConsoleObs.JustNotConstructor(&cmds);
-
     auto ConsoleObs = make_shared<ConsoleObserver>();
-    ConsoleObs->JustNotConstructor(&cmds);
+    ConsoleObs->JustNotConstructor(cmds);
+
+    auto LocalFileObs = std::make_shared<LocalFileObserver>();
+    LocalFileObs->JustNotConstructor(cmds);
 
     string line;
     while (getline(i_stream, line))
     {
-        std::this_thread::sleep_for(0.1s);
+        std::this_thread::sleep_for(0.6s);
         cout << line << endl; // just echo
 
-        cmds.AnalyzeCommand(line);
+        cmds->AnalyzeCommand(line);
     }    
-    cmds.ExecForAllSubs(true);
+    cmds->ExecForAllSubs(true);
 
     i_stream.close();
     cout << endl << endl;

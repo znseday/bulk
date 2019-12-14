@@ -115,7 +115,6 @@ public:
             {
                 ExecForAllSubs(false);
                 //cmds.clear();
-
             }
         }
 
@@ -138,7 +137,7 @@ public:
 };
 //-----------------------------------------------
 
-class ConsoleObserver : std::enable_shared_from_this<ConsoleObserver>, public Observer
+class ConsoleObserver : public std::enable_shared_from_this<ConsoleObserver>, public Observer
 {
 public:
 
@@ -163,9 +162,10 @@ public:
 //        JustNotConstructor(_cmds);
 //    }
 
-    void JustNotConstructor(Commands *_cmds)
+    //void JustNotConstructor(Commands *_cmds)
+    void JustNotConstructor(const unique_ptr<Commands> &_cmds)
     {
-        auto t = shared_from_this(); // terminate called after throwing an instance of 'std::bad_weak_ptr'. Why ????????
+        auto t = shared_from_this();
         _cmds->subscribe(t);
     }
 
@@ -180,7 +180,7 @@ public:
 };
 //-----------------------------------------------
 
-class LocalFileObserver : public Observer, std::enable_shared_from_this<ConsoleObserver>
+class LocalFileObserver : public Observer, public std::enable_shared_from_this<LocalFileObserver>
 {
 public:
 //    LocalFileObserver(Commands *_cmds)
@@ -191,7 +191,8 @@ public:
 //        _cmds->subscribe(shared_from_this());
 //    }
 
-    void JustNotConstructor(Commands *_cmds)
+    //void JustNotConstructor(Commands *_cmds)
+    void JustNotConstructor(const unique_ptr<Commands> &_cmds)
     {
         _cmds->subscribe(shared_from_this());
     }
